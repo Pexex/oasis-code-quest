@@ -214,9 +214,9 @@
     updateStats();
 
     E.run.disabled=true;
-    E.tests.innerHTML='<div class="test-running"><span class="test-spinner" aria-hidden="true"></span><span>Executando cenários de teste…</span></div>';
+    E.tests.innerHTML='<div class="test-running"><span class="test-spinner" aria-hidden="true"></span><span>Executando critérios de validação…</span></div>';
     setScoreState('working','VALIDANDO');
-    E.message.textContent='O sistema está comparando sua função com diferentes cenários e limites.';
+    E.message.textContent='O sistema está avaliando sua função em diferentes cenários, limites e regras de qualidade.';
 
     if(!window.Worker||!window.Blob||!window.URL){
       E.run.disabled=false;
@@ -264,7 +264,7 @@
       var summaryHtml='<div class="test-summary '+(allPassed?'pass':'partial')+'">'+
         '<div class="test-summary-icon">'+(allPassed?'✓':'!')+'</div>'+
         '<div><strong>'+(allPassed?'Todos os testes passaram.':'Sua solução ainda precisa de ajustes.')+'</strong>'+
-        '<span>'+passed+' de '+results.length+' cenários aprovados.</span></div></div>';
+        '<span>'+passed+' de '+results.length+' critérios de validação atendidos.</span></div></div>';
 
       E.tests.innerHTML=summaryHtml+results.map(function(test,index){
         return '<div class="test-result '+(test.ok?'pass':'fail')+'">'+
