@@ -271,6 +271,7 @@
           '<span class="test-icon" aria-hidden="true">'+(test.ok?'✓':'!')+'</span>'+
           '<div class="test-copy"><div class="test-label">'+(test.ok?'APROVADO':'REVISAR')+'</div>'+
           '<div class="test-name">'+esc(test.name)+'</div>'+
+          (!test.ok&&test.feedback?'<div class="test-feedback"><span class="test-feedback-label">PARA DEPURAR</span><p>'+esc(test.feedback)+'</p></div>':'')+
           (test.detail?'<div class="test-detail">'+esc(test.detail)+'</div>':'')+
           '</div></div>';
       }).join('');
