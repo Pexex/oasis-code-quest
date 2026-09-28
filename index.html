@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=3">
 </head>
 <body>
   <main class="page-shell">
@@ -155,8 +155,9 @@
         </section>
 
         <section id="hintPanel" class="hint-panel" aria-live="polite">
-          <div class="kicker">Pista do sistema <span id="hintCounter"></span></div>
-          <p id="hintText"></p>
+          <div class="kicker">Pistas do sistema <span id="hintCounter"></span></div>
+          <div id="hintText" class="hint-list"></div>
+          <div id="hintExhausted" class="hint-exhausted" role="status"></div>
         </section>
 
         <section class="panel stats-panel">
@@ -203,9 +204,9 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-  <script src="./missions.js?v=2"></script>
-  <script src="./tests.js?v=2"></script>
-  <script src="./pdf.js?v=2"></script>
-  <script src="./app.js?v=2"></script>
+  <script src="./missions.js?v=3"></script>
+  <script src="./tests.js?v=3"></script>
+  <script src="./pdf.js?v=3"></script>
+  <script src="./app.js?v=3"></script>
 </body>
 </html>
