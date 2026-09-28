@@ -29,7 +29,7 @@
     signature:$('#missionSignature'),input:$('#missionInput'),ret:$('#missionReturn'),dictionary:$('#dataDictionary'),rules:$('#missionRules'),
     example:$('#missionExample'),checklist:$('#comprehensionChecklist'),dom:$('#domBridge'),editor:$('#codeEditor'),run:$('#runTestsButton'),
     hint:$('#hintButton'),reset:$('#resetCodeButton'),score:$('#testScore'),message:$('#testMessage'),tests:$('#testResults'),hintPanel:$('#hintPanel'),
-    hintCounter:$('#hintCounter'),hintText:$('#hintText'),stats:$('#missionStats'),reportInfo:$('#reportInfo'),reportStats:$('#reportStats'),
+    hintCounter:$('#hintCounter'),hintText:$('#hintText'),hintExhausted:$('#hintExhausted'),stats:$('#missionStats'),reportInfo:$('#reportInfo'),reportStats:$('#reportStats'),
     pdf:$('#pdfButton'),finish:$('#finishPanel'),restart:$('#restartButton')
   };
 
@@ -140,6 +140,30 @@
     updatePdfButton();
   }
 
+  function setScoreState(kind,text){
+    E.score.className='status-pill';
+    if(kind)E.score.classList.add('status-'+kind);
+    E.score.textContent=text;
+  }
+
+  function renderHints(m,exhausted){
+    var count=state.hints[state.current];
+    E.hintCounter.textContent=count+'/'+m.hints.length;
+    E.hintText.innerHTML=m.hints.slice(0,count).map(function(hint,index){
+      return '<div class="hint-item"><div class="hint-index">PISTA '+(index+1)+'</div><p>'+esc(hint)+'</p></div>';
+    }).join('');
+
+    E.hintPanel.classList.toggle('exhausted',!!exhausted);
+    E.hintExhausted.classList.toggle('visible',!!exhausted);
+    E.hintExhausted.innerHTML=exhausted
+      ? '<strong>Você já consultou todas as pistas desta missão.</strong><span>Agora use os resultados dos testes e as regras do sistema para revisar sua solução.</span>'
+      : '';
+
+    E.hint.textContent=count>=m.hints.length
+      ? 'Consultar pistas (todas exibidas)'
+      : 'Solicitar pista';
+  }
+
   function render(){
     var m=missions[state.current];
     renderNav();
@@ -163,15 +187,21 @@
     E.dom.textContent=m.dom;
     E.editor.value=state.code[state.current];
     E.tests.innerHTML='';
-    E.score.textContent=state.done[state.current]?'CHAVE CONQUISTADA':'Aguardando execução';
+    setScoreState(state.done[state.current]?'success':'',''+(state.done[state.current]?'CHAVE CONQUISTADA':'Aguardando execução'));
     E.message.textContent=state.done[state.current]
       ?'Esta missão possui um código aprovado. Você pode revisá-lo e executar uma nova validação.'
       :'Leia o contrato e as regras. Desenvolva sua solução e execute os testes quando estiver pronto.';
 
     E.hintPanel.classList.toggle('visible',state.hints[state.current]>0);
+    E.hintExhausted.classList.remove('visible');
+    E.hintExhausted.innerHTML='';
+    E.hintPanel.classList.remove('exhausted');
     if(state.hints[state.current]>0){
-      E.hintCounter.textContent=state.hints[state.current]+'/'+m.hints.length;
-      E.hintText.textContent=m.hints.slice(0,state.hints[state.current]).join(' ');
+      renderHints(m,false);
+    }else{
+      E.hintCounter.textContent='0/'+m.hints.length;
+      E.hintText.innerHTML='';
+      E.hint.textContent='Solicitar pista';
     }
 
     updateStats();
@@ -184,13 +214,14 @@
     updateStats();
 
     E.run.disabled=true;
-    E.tests.innerHTML='';
-    E.score.textContent='VALIDANDO';
-    E.message.textContent='Executando cenários de teste…';
+    E.tests.innerHTML='<div class="test-running"><span class="test-spinner" aria-hidden="true"></span><span>Executando cenários de teste…</span></div>';
+    setScoreState('working','VALIDANDO');
+    E.message.textContent='O sistema está comparando sua função com diferentes cenários e limites.';
 
     if(!window.Worker||!window.Blob||!window.URL){
       E.run.disabled=false;
-      E.score.textContent='INDISPONÍVEL';
+      setScoreState('danger','INDISPONÍVEL');
+      E.tests.innerHTML='';
       E.message.textContent='Este navegador não oferece o executor necessário.';
       return;
     }
@@ -209,8 +240,9 @@
 
     var timer=setTimeout(function(){
       closeWorker();
-      E.score.textContent='TEMPO ESGOTADO';
-      E.message.textContent='O código não terminou a execução. Verifique se existe algum laço que nunca é encerrado.';
+      setScoreState('danger','TEMPO ESGOTADO');
+      E.tests.innerHTML='<div class="test-summary partial"><div class="test-summary-icon">!</div><div><strong>O código não terminou a execução.</strong><span>Revise laços e condições que possam impedir o encerramento da função.</span></div></div>';
+      E.message.textContent='A validação foi interrompida para proteger a página.';
     },1800);
 
     worker.addEventListener('message',function(event){
@@ -218,8 +250,9 @@
       closeWorker();
 
       if(event.data.error){
-        E.score.textContent='ERRO';
-        E.message.textContent=event.data.error;
+        setScoreState('danger','ERRO');
+        E.tests.innerHTML='<div class="test-summary partial"><div class="test-summary-icon">!</div><div><strong>Não foi possível executar sua solução.</strong><span>'+esc(event.data.error)+'</span></div></div>';
+        E.message.textContent='Corrija o problema indicado e execute os testes novamente.';
         return;
       }
 
@@ -227,9 +260,19 @@
       var passed=results.filter(function(test){return test.ok;}).length;
       state.results[state.current]=results;
 
-      E.tests.innerHTML=results.map(function(test){
-        return '<div class="test-result '+(test.ok?'':'fail')+'"><div>'+(test.ok?'APROVADO':'REVISAR')+
-          ' · '+esc(test.name)+'</div>'+(test.detail?'<div class="test-detail">'+esc(test.detail)+'</div>':'')+'</div>';
+      var allPassed=passed===results.length&&results.length>0;
+      var summaryHtml='<div class="test-summary '+(allPassed?'pass':'partial')+'">'+
+        '<div class="test-summary-icon">'+(allPassed?'✓':'!')+'</div>'+
+        '<div><strong>'+(allPassed?'Todos os testes passaram.':'Sua solução ainda precisa de ajustes.')+'</strong>'+
+        '<span>'+passed+' de '+results.length+' cenários aprovados.</span></div></div>';
+
+      E.tests.innerHTML=summaryHtml+results.map(function(test,index){
+        return '<div class="test-result '+(test.ok?'pass':'fail')+'">'+
+          '<span class="test-icon" aria-hidden="true">'+(test.ok?'✓':'!')+'</span>'+
+          '<div class="test-copy"><div class="test-label">'+(test.ok?'APROVADO':'REVISAR')+'</div>'+
+          '<div class="test-name">'+esc(test.name)+'</div>'+
+          (test.detail?'<div class="test-detail">'+esc(test.detail)+'</div>':'')+
+          '</div></div>';
       }).join('');
 
       if(passed===results.length&&results.length>0){
@@ -238,7 +281,7 @@
         if(state.current<missions.length-1)state.open[state.current+1]=true;
         if(state.done.every(Boolean)&&!state.finished)state.finished=Date.now();
 
-        E.score.textContent='CHAVE CONQUISTADA';
+        setScoreState('success','CHAVE CONQUISTADA');
         E.message.textContent=state.current<missions.length-1
           ?'Todos os testes passaram. A próxima chave foi liberada.'
           :'Todos os testes passaram. O núcleo lógico do OASIS foi restaurado.';
@@ -247,8 +290,8 @@
         renderNav();
         updateStats();
       }else{
-        E.score.textContent=passed+'/'+results.length+' testes';
-        E.message.textContent='Alguns cenários ainda falharam. Use os nomes dos testes para descobrir qual requisito precisa ser revisto.';
+        setScoreState('danger',passed+'/'+results.length+' TESTES');
+        E.message.textContent='Os cartões em vermelho indicam exatamente quais comportamentos ainda precisam ser revistos.';
         save();
       }
     });
@@ -256,17 +299,23 @@
     worker.addEventListener('error',function(event){
       clearTimeout(timer);
       closeWorker();
-      E.score.textContent='ERRO DE SINTAXE';
-      E.message.textContent=event.message||'Revise a sintaxe do JavaScript.';
+      setScoreState('danger','ERRO DE SINTAXE');
+      E.tests.innerHTML='<div class="test-summary partial"><div class="test-summary-icon">!</div><div><strong>O JavaScript não pôde ser interpretado.</strong><span>'+esc(event.message||'Revise a sintaxe do JavaScript.')+'</span></div></div>';
+      E.message.textContent='Corrija a sintaxe antes de validar as regras da missão.';
     });
   }
 
   function showHint(){
     var m=missions[state.current];
-    state.hints[state.current]=Math.min(m.hints.length,state.hints[state.current]+1);
+    var exhausted=state.hints[state.current]>=m.hints.length;
+
+    if(!exhausted){
+      state.hints[state.current]+=1;
+      exhausted=state.hints[state.current]>=m.hints.length;
+    }
+
     E.hintPanel.classList.add('visible');
-    E.hintCounter.textContent=state.hints[state.current]+'/'+m.hints.length;
-    E.hintText.textContent=m.hints.slice(0,state.hints[state.current]).join(' ');
+    renderHints(m,exhausted);
     save();
     updateStats();
   }
@@ -275,7 +324,7 @@
     state.code[state.current]=missions[state.current].starter;
     E.editor.value=state.code[state.current];
     E.tests.innerHTML='';
-    E.score.textContent=state.done[state.current]?'CHAVE CONQUISTADA':'Aguardando execução';
+    setScoreState(state.done[state.current]?'success':'',state.done[state.current]?'CHAVE CONQUISTADA':'Aguardando execução');
     E.message.textContent='Código inicial restaurado.';
     save();
   }
