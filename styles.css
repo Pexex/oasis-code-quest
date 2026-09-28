@@ -318,3 +318,23 @@ footer{margin-top:28px;border-top:1px solid var(--light);padding-top:16px;color:
   textarea{min-height:380px}
   .site-header{padding-bottom:18px}
 }
+
+.test-feedback{
+  margin-top:8px;
+  border-top:1px solid rgba(227,6,19,.16);
+  padding-top:8px;
+}
+.test-feedback-label{
+  display:block;
+  color:var(--senai-red);
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.09em;
+}
+.test-feedback p{
+  margin:4px 0 0;
+  color:var(--dark);
+  font-size:11px;
+  font-weight:400;
+  line-height:1.55;
+}
