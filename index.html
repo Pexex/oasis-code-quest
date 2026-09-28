@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="OASIS Code Quest — atividade interativa de JavaScript da UC Fundamentos de Design Digital (FDD), SENAI-SP.">
+  <meta name="theme-color" content="#FFFFFF">
+  <title>OASIS Code Quest — FDD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="site-header">
+      <div class="header-grid">
+        <div>
+          <div class="brand-line">
+            <span class="accent-bar" aria-hidden="true"></span>
+            <div>
+              <div class="kicker">SENAI-SP · Técnico em Multimídia</div>
+              <div class="uc-name">Fundamentos de Design Digital — FDD</div>
+            </div>
+          </div>
+          <h1>OASIS Code Quest</h1>
+          <p class="lead">Reconstrua três módulos do núcleo lógico do OASIS usando JavaScript. O sistema apresenta todos os requisitos necessários — mas a estratégia para resolver cada problema é sua.</p>
+        </div>
+
+        <aside class="progress-card" aria-label="Progresso da atividade">
+          <div class="kicker">Progresso da missão</div>
+          <div id="progressText" class="progress-value">0 / 3 chaves</div>
+          <div class="progress-track" aria-hidden="true">
+            <div id="progressBar" class="progress-fill"></div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="identity-grid">
+        <label>
+          Nome completo
+          <input id="studentName" autocomplete="name" placeholder="Digite seu nome">
+        </label>
+        <label>
+          Turma
+          <input id="studentClass" placeholder="Ex.: 2º EM — Multimídia">
+        </label>
+      </div>
+    </header>
+
+    <section class="panel incident-panel">
+      <span class="accent-bar stretch" aria-hidden="true"></span>
+      <div class="incident-content">
+        <div class="kicker">Arquivo de incidente 001</div>
+        <h2>As três chaves de manutenção</h2>
+        <p>Horas antes da reabertura do OASIS, uma atualização corrompeu três módulos essenciais. Jogadores começaram a acessar missões incompatíveis com seus perfis, desafios errados passaram a aparecer no menu e o sistema começou a alterar vida, energia e recompensas de forma inconsistente.</p>
+        <p>Os módulos foram isolados e protegidos por três chaves de manutenção: <strong>Cobre, Jade e Cristal</strong>. Para recuperar cada chave, você deverá reconstruir uma função JavaScript e fazê-la passar pelos testes automáticos do sistema.</p>
+        <p><strong>Você receberá todas as regras necessárias.</strong> O OASIS informará o que entra na função, o que deve sair dela e quais restrições precisam ser respeitadas. A lógica da solução não será entregue.</p>
+      </div>
+    </section>
+
+    <nav id="missionNav" class="mission-nav" aria-label="Chaves da atividade"></nav>
+
+    <div class="workspace">
+      <section class="panel brief-panel">
+        <div class="brief-header">
+          <div>
+            <div id="missionKey" class="kicker"></div>
+            <h2 id="missionTitle"></h2>
+          </div>
+          <span id="missionStatus" class="status-pill">EM ANDAMENTO</span>
+        </div>
+
+        <div class="info-card">
+          <div class="kicker">Sua situação</div>
+          <p id="missionStory"></p>
+        </div>
+
+        <section class="section-block">
+          <div class="kicker">O que você deve fazer</div>
+          <p id="missionTask"></p>
+        </section>
+
+        <section class="section-block contract-block">
+          <div class="kicker">Contrato da função</div>
+          <pre id="missionSignature" class="code-box signature-box"></pre>
+          <div class="contract-grid">
+            <div>
+              <div class="micro-label">Você recebe</div>
+              <pre id="missionInput" class="input-description"></pre>
+            </div>
+            <div>
+              <div class="micro-label">Você deve retornar</div>
+              <div id="missionReturn" class="return-description"></div>
+            </div>
+          </div>
+        </section>
+
+        <details open>
+          <summary>Dicionário dos dados</summary>
+          <div id="dataDictionary" class="dictionary"></div>
+        </details>
+
+        <details open>
+          <summary>Regras obrigatórias do sistema</summary>
+          <p class="helper-text">As regras explicam <strong>o que</strong> o sistema deve fazer, mas não dizem <strong>como</strong> programar a solução.</p>
+          <ul id="missionRules" class="rule-list"></ul>
+        </details>
+
+        <details>
+          <summary>Exemplo de estrutura dos dados</summary>
+          <p class="helper-text">O exemplo mostra somente o formato e os nomes das propriedades. Ele não contém a resposta.</p>
+          <pre id="missionExample" class="code-box example-box"></pre>
+        </details>
+
+        <section class="panel comprehension-card">
+          <div class="kicker">Antes de programar</div>
+          <p class="helper-text">Marque os itens abaixo para verificar se você compreendeu o problema.</p>
+          <div id="comprehensionChecklist" class="checklist"></div>
+        </section>
+
+        <div class="info-card">
+          <div class="kicker">Por que isso importa?</div>
+          <p id="domBridge"></p>
+        </div>
+      </section>
+
+      <section class="editor-column">
+        <div class="editor-heading">
+          <div>
+            <div class="kicker">Ambiente de desenvolvimento</div>
+            <h2>Editor JavaScript</h2>
+          </div>
+          <span class="helper-text">Atalho: Ctrl + Enter</span>
+        </div>
+
+        <textarea id="codeEditor" spellcheck="false" aria-label="Editor de código JavaScript"></textarea>
+
+        <div class="button-row">
+          <button id="runTestsButton" class="button primary" type="button">Executar testes</button>
+          <button id="hintButton" class="button secondary" type="button">Solicitar pista</button>
+          <button id="resetCodeButton" class="button secondary" type="button">Restaurar código</button>
+        </div>
+
+        <section class="panel testing-panel" aria-live="polite">
+          <div class="testing-header">
+            <div>
+              <div class="kicker">Validação automática</div>
+              <h3>Central de testes</h3>
+            </div>
+            <span id="testScore" class="status-pill">Aguardando execução</span>
+          </div>
+          <p id="testMessage" class="testing-message">Leia o briefing, desenvolva sua função e execute os testes quando estiver pronto.</p>
+          <div id="testResults" class="test-results"></div>
+        </section>
+
+        <section id="hintPanel" class="hint-panel" aria-live="polite">
+          <div class="kicker">Pista do sistema <span id="hintCounter"></span></div>
+          <p id="hintText"></p>
+        </section>
+
+        <section class="panel stats-panel">
+          <div class="kicker">Sua trajetória</div>
+          <div id="missionStats" class="stats-grid"></div>
+        </section>
+
+        <section class="panel save-panel">
+          <div class="kicker">Continuidade</div>
+          <p class="helper-text">Seu progresso é salvo automaticamente neste navegador. Se estiver usando um computador compartilhado, utilize “Reiniciar atividade” ao terminar.</p>
+          <button id="restartButton" class="button secondary danger-outline" type="button">Reiniciar atividade</button>
+        </section>
+      </section>
+    </div>
+
+    <section class="panel report-panel">
+      <span class="accent-bar stretch" aria-hidden="true"></span>
+      <div class="report-content">
+        <div class="report-heading">
+          <div>
+            <div class="kicker">Registro de conclusão</div>
+            <h2>Certificado + relatório para avaliação</h2>
+            <p id="reportInfo" class="testing-message">Conquiste as três chaves para liberar o documento.</p>
+          </div>
+          <button id="pdfButton" class="button primary" type="button" disabled>Preparando exportação…</button>
+        </div>
+        <div id="reportStats" class="report-stats"></div>
+        <p class="disclaimer">O PDF registra evidências da atividade — testes, tentativas, pistas e código aprovado — para apoiar a avaliação do professor. Não constitui certificado institucional do SENAI.</p>
+      </div>
+    </section>
+
+    <section id="finishPanel" class="finish-panel" aria-live="polite">
+      <span class="accent-bar stretch" aria-hidden="true"></span>
+      <div>
+        <div class="kicker">Sistema restaurado</div>
+        <h2>As três chaves foram recuperadas.</h2>
+        <p>Seu motor lógico agora funciona sem interface. O próximo problema será permitir que o usuário clique, visualize informações e altere o estado da aplicação. É exatamente aí que o DOM entra.</p>
+      </div>
+    </section>
+
+    <footer>
+      Atividade educacional · Fundamentos de Design Digital (FDD) · JavaScript sem DOM · OASIS Code Quest
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
